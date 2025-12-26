@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+if [ -f "frontend/package.json" ]; then
+  cd frontend
+fi
+
+if [ ! -f "package.json" ]; then
+  echo "No package.json found; skipping npm checks."
+  exit 0
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is not available; skipping npm checks."
+  exit 0
+fi
+
+lint_script="$(npm pkg get scripts.lint 2>/dev/null | tr -d '\"')"
+if [ "$lint_script" = "null" ] || [ -z "$lint_script" ]; then
+  echo "No lint script configured; skipping npm checks."
+  exit 0
+fi
+
+npm run lint
