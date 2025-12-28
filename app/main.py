@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -98,7 +98,7 @@ def _cross_validate(control: Control, fields: Dict[str, str]) -> List[str]:
 
 
 @app.post("/evidence/upload", response_model=EvidenceMetadata)
-def upload_evidence(file: UploadFile = File(...), control_id: str | None = None) -> EvidenceMetadata:
+def upload_evidence(file: UploadFile = File(...), control_id: Optional[str] = None) -> EvidenceMetadata:
     evidence_id = str(uuid4())
     payload = file.file.read()
     if not payload:
