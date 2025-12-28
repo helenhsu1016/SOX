@@ -103,7 +103,8 @@ def upload_evidence(file: UploadFile = File(...), control_id: str | None = None)
     payload = file.file.read()
     if not payload:
         raise HTTPException(status_code=400, detail="Empty file upload")
-    evidence_path = EVIDENCE_DIR / f"{evidence_id}_{file.filename}"
+    safe_filename = Path(file.filename).name if file.filename else "upload.bin"
+    evidence_path = EVIDENCE_DIR / f"{evidence_id}_{safe_filename}"
     evidence_path.write_bytes(payload)
     extracted_fields = _extract_fields(file.filename, payload)
     extraction_status = "complete" if extracted_fields else "accepted"
@@ -116,7 +117,7 @@ def upload_evidence(file: UploadFile = File(...), control_id: str | None = None)
 
     metadata = EvidenceMetadata(
         id=evidence_id,
-        filename=file.filename,
+        filename=safe_filename,
         content_type=file.content_type or "application/octet-stream",
         size_bytes=len(payload),
         uploaded_at=datetime.utcnow(),
