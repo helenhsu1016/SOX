@@ -106,7 +106,7 @@ def upload_evidence(file: UploadFile = File(...), control_id: str | None = None)
     safe_filename = Path(file.filename).name if file.filename else "upload.bin"
     evidence_path = EVIDENCE_DIR / f"{evidence_id}_{safe_filename}"
     evidence_path.write_bytes(payload)
-    extracted_fields = _extract_fields(file.filename, payload)
+    extracted_fields = _extract_fields(safe_filename, payload)
     extraction_status = "complete" if extracted_fields else "accepted"
     exceptions: List[str] = []
     authenticity_score = 0.5
